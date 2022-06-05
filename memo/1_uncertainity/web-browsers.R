@@ -1,17 +1,29 @@
+# 1章：不確実性
+
+library(tidyverse)
+
 ##  browser spending analysis 
-browser = read.csv("web-browsers.csv")
+browser = read.csv("./examples/web-browsers.csv")
+browser %>% head()
 
 # data histogram
 par(mai=c(.8,.8,.1,.1))
-hist(log(browser$spend), freq=FALSE,
-	xaxt="n", main="", xlab="total online spend", col=8, border="grey90")
-lgrid = c(1,10,100,1000,10000,100000)
+hist(
+    log(browser$spend), 
+    freq=FALSE,
+	xaxt="n", 
+    main="", 
+    xlab="total online spend", 
+    col=8, 
+    border="grey90"
+    )
+lgrid = c(1,10,100,1000,10000,100000) # x軸の目盛り
 axis(1, at=log(lgrid), labels=sprintf("%.0e",lgrid))
 
 # basic stats
-nrow(browser)
-mean(browser$spend)
-var(browser$spend)/nrow(browser)
+nrow(browser) # サンプル数
+mean(browser$spend) # 平均
+var(browser$spend)/nrow(browser) # 標本平均の分散
 
 xbar <- mean(browser$spend)
 xbse <-  sd(browser$spend)/sqrt(nrow(browser))
@@ -23,8 +35,8 @@ plot(xx, dnorm(xx, xbar, xbse), type="l", col="royalblue", lwd=1.5,
 	xlab="average total online spend", ylab="density")
 
 # nonparametric bootstrap
-B <- 10000
-mub <- c()
+B <- 10000 # ブートストラップサンプル数
+mub <- c() # 再標本の平均の格納先
 for (b in 1:B){
 	samp_b = sample.int(nrow(browser), replace=TRUE)
 	mub <- c(mub, mean(browser$spend[samp_b]))
