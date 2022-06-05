@@ -1,0 +1,100 @@
+---
+title: "線形モデル"
+output: html_document
+date: '2022-06-05'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r install_package, echo=FALSE}
+library(tidyverse)
+```
+
+# 線形モデル
+
+## 概要
+
+
+## 例
+シカゴ研83店舗における3つのオレンジジュースブランドの、週ごとの売上数データ。
+
+
+```{r}
+# データの読み込み
+oj <- read_csv("oj.csv")
+head(oj)
+```
+
+```{r}
+# brandをfactor型に変換
+# TODO: 後で読み込み処理に混ぜちゃう
+oj <- oj %>% 
+    mutate(brand = as_factor(brand))
+levels(oj$brand)
+```
+
+### 実数空間で見るか？対数空間で見るか？
+
+```{r}
+# brandカラーの準備
+brandcol <- c("green","red","gold")
+```
+
+```{r}
+# そのままプロット
+par(mfrow=c(1,2))
+plot(price ~ brand, data=oj, col=brandcol)
+plot(sales ~ price, data=oj, col=brandcol[oj$brand])
+```
+
+
+```{r}
+# 対数に変換
+par(mfrow=c(1,2))
+plot(log(price) ~ brand, data=oj, col=brandcol)
+plot(log(sales) ~ log(price), data=oj, col=brandcol[oj$brand])
+```
+
+- ここでは、「価格」と「売上数」ともに、対数変換した値を使用することにする。
+- 以下の2つの理由で、対数変換した値を使う。
+    1. 図示したところ、対数変換すると線形関係があるように見える。
+    1. 普段、変化の数量が絶対値ではなく、割合で表されることが多い。
+        - 「価格」は、xx%割引のような言い方をすることが多い。
+        - 「売上数」は、前年に比べてxx%売上増のような言い方をすることが多い。
+        
+- より一般には、絶対に負の値を取らない数量は、対数空間で線形に変化するものとして、扱われることが多い。
+- その他、両方の変数が乗法的に変化するような場合(xが2倍の時、yも2倍になるようなもの)
+    - 国内総生産と輸入額など
+    - xもyもめちゃめちゃ大きいやつがあるような状況
+        - 実数のまま扱うと、外れているサンプルの少しの動きに、傾きが影響されてしまうため。
+        
+### シンプルな回帰
+
+```{r}
+# 回帰
+reg <- glm(log(sales) ~ log(price) + brand, data = oj)
+
+# 結果の確認
+summary(reg) ## coef, tests, fit
+coef(reg) ## just coefficients
+```
+
+- interceptの値が本のものと違うのは、参照水準が、本だと「ドミニクス」なのに対して、実行結果だと「トロピカーナ」だから
+
+
+```{r}
+# 結果のプロット
+beta <- coef(reg)
+
+plot(log(sales) ~ log(price), data=oj, col=brandcol[oj$brand], 
+	cex=.1, pch=20, bty="n")
+abline(a=beta[1], b=beta[2], col=brandcol[1], lwd=2)
+abline(a=beta[1]+beta[3], b=beta[2], col=brandcol[2], lwd=2)
+abline(a=beta[1]+beta[4], b=beta[2], col=brandcol[3], lwd=2)
+legend("bottomleft", bty="n", lwd=2, col=brandcol, legend=levels(oj$brand))
+
+```
+
+- ↑だと傾きが同じ = 価格感度が同じと仮定している。
