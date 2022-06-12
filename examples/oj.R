@@ -3,7 +3,7 @@
 ###################################################
 
 ## read in the data
-oj <- read.csv("oj.csv") 
+oj <- read.csv("./oj.csv") 
 head(oj)
 levels(oj$brand)
 
@@ -34,7 +34,7 @@ abline(a=beta[1]+beta[3], b=beta[2], col=brandcol[2], lwd=2)
 abline(a=beta[1]+beta[4], b=beta[2], col=brandcol[3], lwd=2)
 legend("bottomleft", bty="n", lwd=2, col=brandcol, legend=levels(oj$brand))
 
-## Interactions
+## 交互作用　
 ## note that `*' also adds the main effects automatically
 reg_interact = glm(log(sales) ~ log(price)*brand, data=oj)
 coef(reg_interact)

@@ -98,3 +98,27 @@ legend("bottomleft", bty="n", lwd=2, col=brandcol, legend=levels(oj$brand))
 ```
 
 - ↑だと傾きが同じ = 価格感度が同じと仮定している。
+
+## 交互作用　
+
+```{r}
+## note that `*' also adds the main effects automatically
+reg_interact = glm(log(sales) ~ log(price)*brand, data=oj)
+coef(reg_interact)
+## compare brand-specific log(price) slopes to our earlier elasticity (-3.1)
+beta <- coef(reg_interact)
+```
+
+```{r}
+plot(log(sales) ~ log(price), data=oj, col=brandcol[oj$brand], 
+	cex=.1, pch=20, bty="n")
+abline(a=beta[1], b=beta[2], col=brandcol[1], lwd=2)
+abline(a=beta[1]+beta[3], b=beta[2]+beta[5], col=brandcol[2], lwd=2)
+abline(a=beta[1]+beta[4], b=beta[2]+beta[6], col=brandcol[3], lwd=2)
+legend("bottomleft", bty="n", lwd=2, col=brandcol, legend=levels(oj$brand))
+```
+```{r}
+ojreg <- glm(log(sales) ~ log(price)*brand*feat, data=oj)
+# coef(ojreg)
+summary(ojreg)
+```

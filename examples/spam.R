@@ -2,7 +2,7 @@
 ## Logistic regression: Spam data
 ######################################
 
-email <- read.csv("spam.csv")
+email <- read.csv("./examples/spam.csv")
 
 ## fit the full model
 spammy <- glm(spam ~ ., data=email, family='binomial')
@@ -40,7 +40,7 @@ plot(pspam ~ email$spam[leaveout],
 
 ## check out the deviance function for calculating
 ## mse (family="gaussian") and binomial deviance (family="binomial") 
-source("deviance.R")
+source("./examples/deviance.R")
 D <- deviance(y=email$spam[leaveout], pred=pspam, family="binomial")
 ## for null deviance, our pred is ybar: the mean for spam
 ybar <- mean(email$spam[leaveout]=="spam") # marginal prob(spam)
