@@ -3,7 +3,7 @@
 ###################################################
 
 ## read in the data
-oj <- read.csv("./oj.csv") 
+oj <- read.csv("./examples/oj.csv") 
 head(oj)
 levels(oj$brand)
 
@@ -135,3 +135,4 @@ shat <- predict(salesreg, newdata=oj)
 sresid <- log(oj$sales) - shat
 residfit3 <- lm( sresid ~ presid - 1)
 coef(residfit3)
+
